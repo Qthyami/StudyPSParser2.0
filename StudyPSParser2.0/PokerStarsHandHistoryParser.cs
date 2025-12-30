@@ -48,10 +48,10 @@ public static class PokerStarsHandHistoryParser
         var seat=parser.ReadInt();
         parser.VerifyNext(": ")
             .Skip(2)
-            .SkipSpaces();
-        var nickName = parser.TryReadWord(out var nick)
-        ? nick
-        : throw new FormatException("failed to read player's nickname");        
+            .SkipSpaces()
+            .TryReadWord(out var nickName)
+        
+;        
         parser.SkipSpaces()
             .VerifyNext("($")
             .Skip(2);
