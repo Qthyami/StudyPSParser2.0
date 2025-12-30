@@ -27,9 +27,7 @@ public static class PokerStarsHandHistoryParser
     {
         if (!parser.TrySkipUntil("PokerStars Hand #"))
             throw new FormatException("Not a valid PokerStars hand history.");
-        else{
             parser.Skip("PokerStars Hand #".Length);
-        }
         return parser.ReadLong();
     }
             
@@ -40,8 +38,7 @@ public static class PokerStarsHandHistoryParser
             return playersBuilder.ToImmutable();        
             parser.Skip(1);      
             while (TryParseNextSeat (parser, playersBuilder)) //in cycle rolling TryParseNextSeat - extension method
-            { }
-              
+            { }              
             return playersBuilder.ToImmutable();      
     }
 
