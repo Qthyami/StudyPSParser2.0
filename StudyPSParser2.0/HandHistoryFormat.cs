@@ -24,7 +24,5 @@ public class HandHistoryFormat {
         StackSize = stackSize;
         DealtCards = dealtCards;
     }
-
     }
-
 }

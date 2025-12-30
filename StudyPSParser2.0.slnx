@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="StudyPSParser2.0.Tests/StudyPSParser2.0.Tests.csproj" Id="34705af8-2c58-4633-ac37-826f8bc037c5" />
   <Project Path="StudyPSParser2.0/StudyPSParser2.0.csproj" />
 </Solution>
