@@ -1,69 +1,68 @@
-﻿using System.Collections.Immutable;
+﻿
 using System.Globalization;
-using static StudyPSParser2._0.HandHistoryFormat;
 
 namespace StudyPSParser2._0;
+
 public static class PokerStarsHandHistoryParser
 {
-    public static   //possible to refactor into chaining, but less readable
-    HandHistoryFormat.HandHistory ParseSingleHandHistory(string handHistoryText) {
+    public static HandHistory 
+    ParseSingleHandHistory(string handHistoryText) {
         var parser = new FluentParser(handHistoryText);
-        var handId = ParseHandId(parser);
-        var players = ParsePlayers(parser);
-        var (heroNick, DealtCards) = ParseDealtCards(parser);
-        players = players.Select(player =>
+        var handId = parser.ParseHandId();
+        var players = parser.ParsePlayers().ToImmutableList();
+        var (heroNick, dealtCards) = parser.ParseDealtCards();
+      
+        return new HandHistory(
+            handId, 
+            players:[..players.Select(player =>
             player.NickName == heroNick
-            ? new PlayerHistory(
-                player.SeatNumber,
-                player.NickName,
-                player.StackSize,
-                DealtCards)
-            : player).ToImmutableList();
-        return new HandHistoryFormat.HandHistory(handId, players);
+            ? new HandHistoryPlayer(
+                seatNumber: player.SeatNumber,
+                nickName:player.NickName , 
+                stackSize:player.StackSize , 
+                dealtCards:dealtCards 
+                )
+            : player)]);
     }
 
     public static long 
-    ParseHandId(this FluentParser parser)
-    {
+    ParseHandId(this FluentParser parser) {
         if (!parser.TrySkipUntil("PokerStars Hand #"))
             throw new FormatException("Not a valid PokerStars hand history.");
-            parser.Skip("PokerStars Hand #".Length);
-        return parser.ReadLong();
+        return parser.Skip("PokerStars Hand #".Length).ReadLong();
+         
     }
             
-    public static ImmutableList<HandHistoryFormat.PlayerHistory>
+    public static IEnumerable<HandHistoryPlayer>
     ParsePlayers(this FluentParser parser)  {
-            var playersBuilder = ImmutableList.CreateBuilder<HandHistoryFormat.PlayerHistory>();     
-            if (!parser.TrySkipUntil("\nSeat "))
-            return playersBuilder.ToImmutable();        
-            parser.Skip(1);      
-            while (TryParseNextSeat (parser, playersBuilder)) //in cycle rolling TryParseNextSeat - extension method
-            { }              
-            return playersBuilder.ToImmutable();      
+        if (!parser.TrySkipUntil("\nSeat "))
+            yield break;
+        parser.Skip("#".Length);
+        while (TryParseNextSeat(parser, out var player)) {
+            yield return player;
+        }
     }
 
-    public static PlayerHistory 
+    public static HandHistoryPlayer 
     ParseSeatLine(this FluentParser parser) {
         parser.VerifyNext("Seat "). Skip("Seat ".Length);  
         var seat=parser.ReadInt();
         parser.VerifyNext(": ")
             .Skip(2)
             .SkipSpaces()
-            .TryReadWord(out var nickName)
-        
-;        
+            .TryReadWord(out var nickName);
+       
         parser.SkipSpaces()
             .VerifyNext("($")
             .Skip(2);
-        var stackSize=parser.ReadDouble(CultureInfo.InvariantCulture);
-        parser.SkipSpaces()            
-            .Skip("in chips".Length);        
-        return new PlayerHistory(seat,nickName,stackSize,dealtCards:"");
+        var stackSize=parser.ReadDouble();
+        
+        return new HandHistoryPlayer(seat,nickName,stackSize,dealtCards:"");
     }
 
-    public static (string HeroNick, string Cards)
+    public static (string heroNick, string cards)
     ParseDealtCards(this FluentParser parser) {
-        if (!parser.TrySkipUntil("*** HOLE CARDS ***")) //slow perfomance of TrySkipUntil, can be refactored, but more code
+        if (!parser.TrySkipUntil("*** HOLE CARDS ***"))
             throw new FormatException("HOLE CARDS section not found");        
         parser.Skip("*** HOLE CARDS ***".Length)
             .SkipUntilNextLine()
@@ -79,16 +78,17 @@ public static class PokerStarsHandHistoryParser
         return (heroNickName, dealtCards);  
     }
 
-    static bool //extension method for ParsePlayers
-    TryParseNextSeat(this FluentParser parser,ImmutableList<HandHistoryFormat.PlayerHistory>.Builder players){
+    static bool
+    TryParseNextSeat(this FluentParser parser,out HandHistoryPlayer result){
+        result = default;
         if (!parser.Next("Seat "))
-        return false;
+            return false;
         var lookahead = parser.Clone();
         if (!lookahead.TryReadUntil('\n', int.MaxValue, out var line) ||!line.Contains("in chips"))
             return false;
 
-    var player = ParseSeatLine(parser);
-    players.Add(player);
+   result = ParseSeatLine(parser);
+   
 
     if (parser.HasNext)
         parser.SkipUntilNextLine();

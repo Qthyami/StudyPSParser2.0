@@ -5,7 +5,7 @@ namespace StudyPSParser2._0;
 
  public class FluentParser {
     public string String { get; }
-    private int _position { get; set; }
+    public int _position { get; private set; }
     public int Position => _position;
     public char NextChar => String[_position];
     public bool HasNext => _position < String.Length - 1;
