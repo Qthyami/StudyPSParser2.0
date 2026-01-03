@@ -3,92 +3,95 @@
 [TestFixture]
 public class PokerStarsHandHistoryParserTests
 {
-    [Test] public void ParseHandId_ValidHand_ReturnsCorrectHandId() {
+    [Test] public void 
+    ParseHandId_ValidHand_ReturnsCorrectHandId() {
       
         var parser = new FluentParser(text);
-
-        var handId = PokerStarsHandHistoryParser.ParseHandId(parser);
-
-        TestContext.Out.WriteLine($"HandId = {handId}");
-
-        Assert.That(handId, Is.EqualTo(93405882771L));
+        var handId = parser.ParseHandId();
+        handId.Assert(93405882771);
     }
 
-    [Test]    public void ParseSeatLine_ValidSeatLine_ParsesPlayerCorrectly() {
+    [Test] public void 
+    ParseSeatLine_ValidSeatLine_ParsesPlayerCorrectly() {
         var line = "Seat 3: angrypaca ($26.87 in chips)\n";
         var parser = new FluentParser(line);
-        var player = PokerStarsHandHistoryParser.ParseSeatLine(parser);
-        TestContext.Out.WriteLine(
-            $"Seat={player.SeatNumber}, Nick={player.NickName}, Stack={player.StackSize}"
-        );
+        var player = parser.ParseSeatLine();
+        player.SeatNumber
+        .Assert(3);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(player.SeatNumber, Is.EqualTo(3));
-            Assert.That(player.NickName, Is.EqualTo("angrypaca"));
-            Assert.That(player.StackSize, Is.EqualTo(26.87));
-        });
+    player.NickName
+        .Assert("angrypaca");
+
+    player.StackSize
+        .Assert(26.87);
     }
-
     [Test]
-public void ParsePlayers_MultipleSeats_ParsesAllPlayers()
+    public void ParsePlayers_MultipleSeats_ParsesAllPlayers()
 {
     var parser = new FluentParser(text);
 
     parser.ParseHandId();
     var players = parser.ParsePlayers().ToList();
 
-    TestContext.Out.WriteLine($"Players count = {players.Count}");
-    foreach ( var p in players)
-         TestContext.Out.WriteLine(
-            $"{p.SeatNumber} | {p.NickName} | {p.StackSize} | {p.DealtCards}");
-
-    Assert.That(players.Count, Is.EqualTo(6));
-
-    Assert.Multiple(() =>
-    {
-        Assert.That(players[0].NickName, Is.EqualTo("VakaLuks"));
-        Assert.That(players[0].SeatNumber, Is.EqualTo(1));
-        Assert.That(players[0].StackSize, Is.EqualTo(26.87));
-
-        Assert.That(players[1].NickName, Is.EqualTo("BigBlindBets"));
-        Assert.That(players[2].NickName, Is.EqualTo("Jamol121"));
-        Assert.That(players[3].NickName, Is.EqualTo("ubbikk"));
-        Assert.That(players[4].NickName, Is.EqualTo("RicsiTheKid"));
-
-        Assert.That(players[5].NickName, Is.EqualTo("angrypaca"));
-        Assert.That(players[5].SeatNumber, Is.EqualTo(6));
-        Assert.That(players[5].StackSize, Is.EqualTo(26.89));
-    });
+    players.Count
+        .Assert(6);
+    // Player 0
+    players[0].SeatNumber
+        .Assert(1);
+    players[0].NickName
+        .Assert("VakaLuks");
+    players[0].StackSize
+        .Assert(26.87);
+    // Player 1
+    players[1].SeatNumber
+        .Assert(2);
+    players[1].NickName
+        .Assert("BigBlindBets");
+    players[1].StackSize
+        .Assert(29.73);
+    // Player 2
+    players[2].SeatNumber
+        .Assert(3);
+    players[2].NickName
+        .Assert("Jamol121");
+    players[2].StackSize
+        .Assert(17.66);
+    // Player 3
+    players[3].SeatNumber
+        .Assert(4);
+    players[3].NickName
+        .Assert("ubbikk");
+    players[3].StackSize
+        .Assert(26.06);
+    // Player 4
+    players[4].SeatNumber
+        .Assert(5);
+    players[4].NickName
+        .Assert("RicsiTheKid");
+    players[4].StackSize
+        .Assert(25.0);
+    // Player 5
+    players[5].SeatNumber
+        .Assert(6);
+    players[5].NickName
+        .Assert("angrypaca");
+    players[5].StackSize
+        .Assert(26.89);
 }
-
-
-    [Test]
-public void ParseSingleHandHistory_Debug() 
-{
-    
-    var history = PokerStarsHandHistoryParser.ParseSingleHandHistory(text);
-
-    TestContext.Out.WriteLine($"HandId: {history.HandId}");
-    foreach (var p  in history.Players)
-        TestContext.Out.WriteLine($"{p.SeatNumber} | {p.NickName} | {p.StackSize} | {p.DealtCards}");
- }
-
-    [Test]
-    public void ParseDealtCards_ValidHoleCards_ParsesHeroAndCards()
+    [Test] public void 
+    ParseSingleHandHistory_Debug()
     {
-      
+        var history = PokerStarsHandHistoryParser.ParseSingleHandHistory(text);
+        history.HandId
+            .Assert(93405882771L);
+    }
+    [Test] public void 
+    ParseDealtCards_ValidHoleCards_ParsesHeroAndCards()
+    {
         var parser = new FluentParser(text);
-
-        var (heroNick, cards) = PokerStarsHandHistoryParser.ParseDealtCards(parser);
-
-        TestContext.Out.WriteLine($"Hero:{heroNick}, Cards:{cards}");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(heroNick, Is.EqualTo("angrypaca"));
-            Assert.That(cards, Is.EqualTo("6d As"));
-        });
+        var (heroNick, cards) = parser.ParseDealtCards();
+        heroNick.Assert("angrypaca");
+        cards.Assert("6d As");
     }
 
     public string text = """
@@ -130,6 +133,7 @@ Seat 5: RicsiTheKid (small blind) folded before Flop
 Seat 6: angrypaca (big blind) folded on the Turn
 """;
 }
+
 
 
 
