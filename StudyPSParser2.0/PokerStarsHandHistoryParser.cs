@@ -1,6 +1,4 @@
 ﻿
-using System.Globalization;
-
 namespace StudyPSParser2._0;
 
 public static class PokerStarsHandHistoryParser
@@ -45,40 +43,22 @@ public static class PokerStarsHandHistoryParser
 
     public static HandHistoryPlayer 
     ParseSeatLine(this FluentParser parser) {
-        parser.VerifyNext("Seat "). Skip("Seat ".Length);  
-        var seat=parser.ReadInt();
-        parser.VerifyNext(": ")
-            .Skip(2)
-            .SkipSpaces()
-            .TryReadWord(out var nickName);
-       
-        parser.SkipSpaces()
-            .VerifyNext("($")
-            .Skip(2);
-        var stackSize=parser.ReadDouble();
-        
+        var seat = parser.ReadSeatNumber();
+        var nickName = parser.ReadPlayerNick();
+        var stackSize = parser.ReadPlayerStack();
         return new HandHistoryPlayer(seat,nickName,stackSize,dealtCards:"");
     }
 
     public static (string heroNick, string cards)
     ParseDealtCards(this FluentParser parser) {
-        if (!parser.TrySkipUntil("*** HOLE CARDS ***"))
-            throw new FormatException("HOLE CARDS section not found");        
-        parser.Skip("*** HOLE CARDS ***".Length)
-            .SkipUntilNextLine()
-            .VerifyNext("Dealt to ")
-            .Skip("Dealt to ".Length);
-            if (!parser.TryReadWord(out var heroNickName))
-            throw new FormatException("Failed to read hero nickname");
-        parser.SkipSpaces()
-            .VerifyNext("[")
-            .Skip(1);
-        var dealtCards = parser.ReadUntil(']');
-        parser.Skip(1); 
+        parser.SkipToHoleCards();
+        var heroNickName = parser.ReadHeroNick();
+        var dealtCards = parser.ReadHeroCards();
         return (heroNickName, dealtCards);  
     }
 
-    static bool
+    //Extensions method for ParsePlayers()
+    private static bool
     TryParseNextSeat(this FluentParser parser,out HandHistoryPlayer result){
         result = default;
         if (!parser.Next("Seat "))
@@ -88,11 +68,52 @@ public static class PokerStarsHandHistoryParser
             return false;
 
    result = ParseSeatLine(parser);
-   
-
     if (parser.HasNext)
         parser.SkipUntilNextLine();
         return true;
     }
-}
 
+    //extensions methods for ParseDealtCards()
+    private static void 
+    SkipToHoleCards(this FluentParser parser) {
+        if (!parser.TrySkipUntil("*** HOLE CARDS ***"))
+            throw new FormatException("HOLE CARDS section not found");
+        parser.Skip("*** HOLE CARDS ***".Length).SkipUntilNextLine();
+    }
+
+    private static string 
+    ReadHeroNick(this FluentParser parser) {
+        parser.VerifyNext("Dealt to ").Skip("Dealt to ".Length);
+        if (!parser.TryReadWord(out var heroNick))
+            throw new FormatException("Failed to read hero nickname");
+        return heroNick;
+    }
+
+    private static string 
+    ReadHeroCards(this FluentParser parser) {
+        parser.SkipSpaces().VerifyNext("[").Skip(1);
+        return parser.ReadUntil(']'); 
+    }
+    //Extensions methods for ParseSeatLine()
+    private static int 
+    ReadSeatNumber(this FluentParser parser) {
+        parser.VerifyNext("Seat ").Skip("Seat ".Length);
+        return parser.ReadInt();
+    }
+   
+    private static string 
+    ReadPlayerNick(this FluentParser parser) {
+        parser.VerifyNext(": ").Skip(2).SkipSpaces();
+        if (!parser.TryReadWord(out var nickName))
+            throw new FormatException("Failed to read player's nickname");
+        return nickName;
+    }
+   
+    private static double 
+    ReadPlayerStack(this FluentParser parser) {
+        parser.SkipSpaces().VerifyNext("($").Skip(2);
+        return parser.ReadDouble(); 
+    }
+
+}
+   
