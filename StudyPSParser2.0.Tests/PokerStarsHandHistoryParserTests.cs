@@ -78,41 +78,27 @@ public class PokerStarsHandHistoryParserTests
     players[5].StackSize
         .Assert(26.89);
 }
-   [Test]
+[Test]
 public void ParseSingleHandHistory_Debug()
 {
     var history = PokerStarsHandHistoryParser.ParseSingleHandHistory(text);
 
-   
     history.HandId.Assert(93405882771L);
-    history.Players.Count
-        .Assert(6);
+    history.Players.Count().Assert(6); // <-- используем Count() для IEnumerable
+
     var hero = history.Players.First(p => p.DealtCards.Count > 0);
 
-    hero.SeatNumber
-        .Assert(6);
+    hero.SeatNumber.Assert(6);
+    hero.NickName.Assert("angrypaca");
+    hero.StackSize.Assert(26.89);
 
-    hero.NickName
-        .Assert("angrypaca");
+    hero.DealtCards.Count.Assert(2); // <-- ImmutableList имеет свойство Count
 
-    hero.StackSize
-        .Assert(26.89);
+    hero.DealtCards[0].Rank.Assert(CardRank.Six);
+    hero.DealtCards[0].Suit.Assert(Suit.Diamonds);
 
-   
-    hero.DealtCards.Count
-        .Assert(2);
-
-    hero.DealtCards[0].Rank
-        .Assert(CardRank.Six);
-
-    hero.DealtCards[0].Suit
-        .Assert(Suit.Diamonds);
-
-    hero.DealtCards[1].Rank
-        .Assert(CardRank.Ace);
-
-    hero.DealtCards[1].Suit
-        .Assert(Suit.Spades);
+    hero.DealtCards[1].Rank.Assert(CardRank.Ace);
+    hero.DealtCards[1].Suit.Assert(Suit.Spades);
 }
 
     [Test] public void 

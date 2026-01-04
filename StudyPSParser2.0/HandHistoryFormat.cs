@@ -7,9 +7,9 @@ namespace StudyPSParser2._0;
 public class 
 HandHistory {
     public long HandId { get; }
-    public ImmutableList<HandHistoryPlayer> Players { get; }
+    public IEnumerable<HandHistoryPlayer> Players { get; }
     
-    public HandHistory(long handId, ImmutableList<HandHistoryPlayer> players) {
+    public HandHistory(long handId, IEnumerable<HandHistoryPlayer> players) {
         HandId = handId;
         Players = players;
     }
