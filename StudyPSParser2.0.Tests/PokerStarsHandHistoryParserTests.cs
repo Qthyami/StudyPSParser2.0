@@ -78,13 +78,43 @@ public class PokerStarsHandHistoryParserTests
     players[5].StackSize
         .Assert(26.89);
 }
-    [Test] public void 
-    ParseSingleHandHistory_Debug()
-    {
-        var history = PokerStarsHandHistoryParser.ParseSingleHandHistory(text);
-        history.HandId
-            .Assert(93405882771L);
-    }
+   [Test]
+public void ParseSingleHandHistory_Debug()
+{
+    var history = PokerStarsHandHistoryParser.ParseSingleHandHistory(text);
+
+   
+    history.HandId.Assert(93405882771L);
+    history.Players.Count
+        .Assert(6);
+    var hero = history.Players.First(p => p.DealtCards.Count > 0);
+
+    hero.SeatNumber
+        .Assert(6);
+
+    hero.NickName
+        .Assert("angrypaca");
+
+    hero.StackSize
+        .Assert(26.89);
+
+   
+    hero.DealtCards.Count
+        .Assert(2);
+
+    hero.DealtCards[0].Rank
+        .Assert(CardRank.Six);
+
+    hero.DealtCards[0].Suit
+        .Assert(Suit.Diamonds);
+
+    hero.DealtCards[1].Rank
+        .Assert(CardRank.Ace);
+
+    hero.DealtCards[1].Suit
+        .Assert(Suit.Spades);
+}
+
     [Test] public void 
     ParseDealtCards_ValidHoleCards_ParsesHeroAndCards()
     {
@@ -93,6 +123,22 @@ public class PokerStarsHandHistoryParserTests
         heroNick.Assert("angrypaca");
         cards.Assert("6d As");
     }
+
+    [Test]
+    public void ParseDealtCards_TwoCards_BothFormatsParsedCorrectly()
+{       var cardsString = "As 4h";   
+        var cards = cardsString.ParseDealtCards();
+
+        Assert.Multiple(() =>
+        {
+            cards.Count.Assert(2);
+            cards[0].Rank.Assert(CardRank.Ace);
+            cards[0].Suit.Assert(Suit.Spades);
+            cards[1].Rank.Assert(CardRank.Four);
+            cards[1].Suit.Assert(Suit.Hearts);
+        });
+    
+}
 
     public string text = """
 PokerStars Hand #93405882771:  Hold'em No Limit ($0.10/$0.25 USD) - 2013/02/03 1:16:19 EET [2013/02/02 18:16:19 ET]

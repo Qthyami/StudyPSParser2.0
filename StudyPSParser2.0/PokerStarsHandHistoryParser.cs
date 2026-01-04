@@ -18,7 +18,7 @@ public static class PokerStarsHandHistoryParser
                 seatNumber: player.SeatNumber,
                 nickName:player.NickName , 
                 stackSize:player.StackSize , 
-                dealtCards:dealtCards 
+                dealtCards:dealtCards.ParseDealtCards() 
                 )
             : player)]);
     }
@@ -46,7 +46,7 @@ public static class PokerStarsHandHistoryParser
         var seat = parser.ReadSeatNumber();
         var nickName = parser.ReadPlayerNick();
         var stackSize = parser.ReadPlayerStack();
-        return new HandHistoryPlayer(seat,nickName,stackSize,dealtCards:"");
+        return new HandHistoryPlayer(seat,nickName,stackSize);
     }
 
     public static (string heroNick, string cards)
@@ -115,5 +115,7 @@ public static class PokerStarsHandHistoryParser
         return parser.ReadDouble(); 
     }
 
-}
+    
+
+    }
    
