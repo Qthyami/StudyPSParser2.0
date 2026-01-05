@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Text;
 
 namespace StudyPSParser2._0;
 
@@ -44,8 +43,6 @@ namespace StudyPSParser2._0;
         _position = index + @string.Length;
         return this;
     }
-
-    
 
     public bool
     Next(char @char) => NextChar == @char;
@@ -193,14 +190,6 @@ namespace StudyPSParser2._0;
         return this;
     }
 
-
-
-
-
-
-
-
-
     public string
     ReadToEnd() => String.Substring(Position);
     
@@ -230,9 +219,6 @@ namespace StudyPSParser2._0;
         }
         return isNegative ? -result : result;
     }
-
-
-   
 
     public double
     ReadDouble(CultureInfo cultureInfo = null) {
@@ -266,8 +252,6 @@ namespace StudyPSParser2._0;
         return result;
     }
 
-  
-
     public int
     ReadDigit() {
         var result = NextChar.ToDigit();
@@ -275,11 +259,8 @@ namespace StudyPSParser2._0;
         return result;
     }
 
-
-
     public FluentParser
     Clone() => new FluentParser(String).Skip(_position);
-
 
     public FluentParser
     VerifyNext(string @string) {
@@ -308,10 +289,10 @@ FluentParserHelperInternal {
 
     public static int
     ToDigit(this char @char) {
-#if DEBUG
+        #if DEBUG
         if (@char - '0' > 9)
             throw new ArgumentOutOfRangeException(nameof(@char));
-#endif
+        #endif
         return @char - '0';
     }
 }

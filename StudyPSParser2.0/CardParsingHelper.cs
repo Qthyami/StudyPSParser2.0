@@ -2,23 +2,22 @@
 namespace StudyPSParser2._0;
 
 public static class CardParsingHelper {
-    public static ImmutableList<Card> ParseDealtCards(this string cardsString)
-    {
-     return cardsString
-        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-        .Select(card =>
-        {
-            if (card.Length != 2)
-                throw new ArgumentException($"Invalid card string: {card}");
-            var rank = card[0].ToString().ToUpper().ParseCardRank();
-            var suit = card[1].ToString().ToUpper().ParseSuit();
-            return new Card(rank, suit);
-        })
-        .ToImmutableList();
-    }
+    public static ImmutableList<Card>
+    ParseDealtCards(this string cardsString) =>
+        cardsString
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(card => {
+                if (card.Length != 2)
+                    throw new ArgumentException($"Invalid card string: {card}");
+                var rank = card[0].ToString().ToUpper().ParseCardRank();
+                var suit = card[1].ToString().ToUpper().ParseSuit();
+                return new Card(rank, suit);
+            })
+            .ToImmutableList();
 
-    public static 
-    CardRank ParseCardRank(this string symbol) {
+
+    public static CardRank
+    ParseCardRank(this string symbol) {
         switch (symbol) {
             case "2": return CardRank.Two;
             case "3": return CardRank.Three;

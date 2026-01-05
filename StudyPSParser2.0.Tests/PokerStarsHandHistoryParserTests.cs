@@ -1,130 +1,92 @@
 ﻿namespace StudyPSParser2._0.Tests;
 
 [TestFixture]
-public class PokerStarsHandHistoryParserTests
-{
-    [Test] public void 
+public class PokerStarsHandHistoryParserTests {
+    [Test]
+    public void
     ParseHandId_ValidHand_ReturnsCorrectHandId() {
-      
         var parser = new FluentParser(text);
         var handId = parser.ParseHandId();
         handId.Assert(93405882771);
     }
 
-    [Test] public void 
+    [Test]
+    public void
     ParseSeatLine_ValidSeatLine_ParsesPlayerCorrectly() {
         var line = "Seat 3: angrypaca ($26.87 in chips)\n";
         var parser = new FluentParser(line);
         var player = parser.ParseSeatLine();
-        player.SeatNumber
-        .Assert(3);
-
-    player.NickName
-        .Assert("angrypaca");
-
-    player.StackSize
-        .Assert(26.87);
+        player.SeatNumber.Assert(3);
+        player.NickName.Assert("angrypaca");
+        player.StackSize.Assert(26.87);
     }
+
     [Test]
-    public void ParsePlayers_MultipleSeats_ParsesAllPlayers()
-{
-    var parser = new FluentParser(text);
-
-    parser.ParseHandId();
-    var players = parser.ParsePlayers().ToList();
-
-    players.Count
-        .Assert(6);
-    // Player 0
-    players[0].SeatNumber
-        .Assert(1);
-    players[0].NickName
-        .Assert("VakaLuks");
-    players[0].StackSize
-        .Assert(26.87);
-    // Player 1
-    players[1].SeatNumber
-        .Assert(2);
-    players[1].NickName
-        .Assert("BigBlindBets");
-    players[1].StackSize
-        .Assert(29.73);
-    // Player 2
-    players[2].SeatNumber
-        .Assert(3);
-    players[2].NickName
-        .Assert("Jamol121");
-    players[2].StackSize
-        .Assert(17.66);
-    // Player 3
-    players[3].SeatNumber
-        .Assert(4);
-    players[3].NickName
-        .Assert("ubbikk");
-    players[3].StackSize
-        .Assert(26.06);
-    // Player 4
-    players[4].SeatNumber
-        .Assert(5);
-    players[4].NickName
-        .Assert("RicsiTheKid");
-    players[4].StackSize
-        .Assert(25.0);
-    // Player 5
-    players[5].SeatNumber
-        .Assert(6);
-    players[5].NickName
-        .Assert("angrypaca");
-    players[5].StackSize
-        .Assert(26.89);
-}
-[Test]
-public void ParseSingleHandHistory_Debug()
-{
-    var history = PokerStarsHandHistoryParser.ParseSingleHandHistory(text);
-
-    history.HandId.Assert(93405882771L);
-    history.Players.Count().Assert(6); // <-- используем Count() для IEnumerable
-
-    var hero = history.Players.First(p => p.DealtCards.Count > 0);
-
-    hero.SeatNumber.Assert(6);
-    hero.NickName.Assert("angrypaca");
-    hero.StackSize.Assert(26.89);
-
-    hero.DealtCards.Count.Assert(2); // <-- ImmutableList имеет свойство Count
-
-    hero.DealtCards[0].Rank.Assert(CardRank.Six);
-    hero.DealtCards[0].Suit.Assert(Suit.Diamonds);
-
-    hero.DealtCards[1].Rank.Assert(CardRank.Ace);
-    hero.DealtCards[1].Suit.Assert(Suit.Spades);
-}
-
-    [Test] public void 
-    ParseDealtCards_ValidHoleCards_ParsesHeroAndCards()
-    {
+    public void
+    ParsePlayers_MultipleSeats_ParsesAllPlayers() {
         var parser = new FluentParser(text);
-        var (heroNick, cards) = parser.ParseDealtCards();
+        parser.ParseHandId();
+        var players = parser.ParsePlayers().ToList();
+        players.Count.Assert(6);
+        players[0].SeatNumber.Assert(1);
+        players[0].NickName.Assert("VakaLuks");
+        players[0].StackSize.Assert(26.87);
+        players[1].SeatNumber.Assert(2);
+        players[1].NickName.Assert("BigBlindBets");
+        players[1].StackSize.Assert(29.73);
+        players[2].SeatNumber.Assert(3);
+        players[2].NickName.Assert("Jamol121");
+        players[2].StackSize.Assert(17.66);
+        players[3].SeatNumber.Assert(4);
+        players[3].NickName.Assert("ubbikk");
+        players[3].StackSize.Assert(26.06);
+        players[4].SeatNumber.Assert(5);
+        players[4].NickName.Assert("RicsiTheKid");
+        players[4].StackSize.Assert(25.0);
+        players[5].SeatNumber.Assert(6);
+        players[5].NickName.Assert("angrypaca");
+        players[5].StackSize.Assert(26.89);
+    }
+
+    [Test]
+    public void
+    ParseSingleHandHistory_Debug() {
+        var history = text.ParseSingleHandHistory();
+
+        history.HandId.Assert(93405882771);
+        history.Players.AssertCount(6);
+        history.TryGetHeroPlayer(out var hero).AssertTrue();
+
+        hero.SeatNumber.Assert(6);
+        hero.NickName.Assert("angrypaca");
+        hero.StackSize.Assert(26.89);
+        hero.DealtCards.Count.Assert(2);
+        hero.DealtCards[0].AssertCard(CardRank.Six,Suit.Diamonds);
+        hero.DealtCards[1].AssertCard(CardRank.Ace,Suit.Spades);
+    }
+
+    [Test]
+    public void
+    ParseDealtCards_ValidHoleCards_ParsesHeroAndCards() {
+        var parser = new FluentParser(text);
+        var (heroNick, cards) = parser.ParseHeroAndCards();
         heroNick.Assert("angrypaca");
         cards.Assert("6d As");
     }
 
     [Test]
-    public void ParseDealtCards_TwoCards_BothFormatsParsedCorrectly()
-{       var cardsString = "As 4h";   
+    public void
+    ParseDealtCards_TwoCards_BothFormatsParsedCorrectly() {
+        var parser = new FluentParser(text);
+        var (heroNick, cardsString) = parser.ParseHeroAndCards();
+        heroNick.Assert("angrypaca");
         var cards = cardsString.ParseDealtCards();
-
-        Assert.Multiple(() =>
-        {
-            cards.Count.Assert(2);
-            cards[0].Rank.Assert(CardRank.Ace);
-            cards[0].Suit.Assert(Suit.Spades);
-            cards[1].Rank.Assert(CardRank.Four);
-            cards[1].Suit.Assert(Suit.Hearts);
+        Assert.Multiple(() => {
+            cards[0].AssertCard(CardRank.Six,Suit.Diamonds);
+            cards[1].AssertCard(CardRank.Ace, Suit.Spades);
         });
-    
-}
+
+    }
 
     public string text = """
 PokerStars Hand #93405882771:  Hold'em No Limit ($0.10/$0.25 USD) - 2013/02/03 1:16:19 EET [2013/02/02 18:16:19 ET]
