@@ -79,8 +79,10 @@ public class PokerStarsHandHistoryParserTests {
     ParseDealtCards_TwoCards_BothFormatsParsedCorrectly() {
         var parser = new FluentParser(text);
         var (heroNick, cardsString) = parser.ParseHeroAndCards();
-        heroNick.Assert("angrypaca");
-        var cards = cardsString.ParseDealtCards();
+        heroNick.Assert("angrypaca");    //    symbol = char.ToUpper(symbol);
+    //return Enum.GetValues<CardRank>().First(rank=>rank.GetSymbol()==symbol);
+
+        var cards = cardsString.ParseDealtCards().ToList();
         Assert.Multiple(() => {
             cards[0].AssertCard(CardRank.Six,Suit.Diamonds);
             cards[1].AssertCard(CardRank.Ace, Suit.Spades);

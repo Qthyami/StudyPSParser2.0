@@ -7,12 +7,12 @@ PokerStarsHandHistoryParser {
         var parser = new FluentParser(handHistoryText);
         var handId = parser.ParseHandId();
         var players = parser.ParsePlayers().ToImmutableList();
-        var (heroNick, dealtCardsString) = parser.ParseHeroAndCards();
+        var (heroNickname, dealtCardsString) = parser.ParseHeroAndCards();
         var heroCards=dealtCardsString.ParseDealtCards().ToImmutableList();
         return new HandHistory(
             handId:handId,
             players: [..players.Select(player =>
-                player.nickName == heroNick
+                player.nickName == heroNickname
                 ? new HandHistoryPlayer(
                     seatNumber: player.seatNumber,
                     nickName:player.nickName ,
@@ -116,5 +116,4 @@ PokerStarsHandHistoryParser {
         parser.SkipSpaces().VerifyNext("($").Skip(2);
         return parser.ReadDouble();
     }
-
 }

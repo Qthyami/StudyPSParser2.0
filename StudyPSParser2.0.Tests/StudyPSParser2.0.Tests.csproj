@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
+    <Using Include="StudyPSParser2._0.Common"></Using>
   </ItemGroup>
 
   <ItemGroup>

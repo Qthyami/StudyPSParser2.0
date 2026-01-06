@@ -6,32 +6,30 @@ using System.Text;
 namespace StudyPSParser2._0;
 
 public static class HandHistoryFunctions {
-    public static ImmutableList<Card>
+    public static IEnumerable<Card>
     ParseDealtCards(this string cardsString) =>
         cardsString
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Select(card => {
-                if (card.Length != 2)
-                    throw new ArgumentException($"Invalid card string: {card}");
+            .SplitWords().Select(card => { ParseCards(card);
+                return card.ParseCards();
+            });
+            
+            public static Card ParseCards (this string CardsSting) {
+                if (CardsSting.Length != 2)
+                    throw new ArgumentException($"Invalid card string: {CardsSting}");
 
-                var rank = char.ToUpper(card[0]).ParseCardRank();
-                var suit = char.ToLower(card[1]).ParseSuit();
-                return new Card(rank, suit);
-            })
-            .ToImmutableList();
-
+                var rank = CardsSting[0].ParseCardRank();
+                var suit = CardsSting[1].ParseSuit();
+                return new Card(rank, suit); 
+            }
+           
     public static CardRank
     ParseCardRank(this char symbol)=>
         symbol.ParseEnumBySymbol<CardRank>();
-    //    symbol = char.ToUpper(symbol);
-    //return Enum.GetValues<CardRank>().First(rank=>rank.GetSymbol()==symbol);
     
-
     public static Suit
     ParseSuit(this char symbol) {
         symbol = char.ToLower(symbol);
         return Enum.GetValues<Suit>().First(suit=>suit.GetSymbol()==symbol);
-    
     }
 }
 
