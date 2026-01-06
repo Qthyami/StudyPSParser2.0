@@ -8,31 +8,24 @@ PokerStarsHandHistoryParser {
         var handId = parser.ParseHandId();
         var players = parser.ParsePlayers().ToImmutableList();
         var (heroNickname, dealtCardsString) = parser.ParseHeroAndCards();
-        var heroCards=dealtCardsString.ParseDealtCards().ToImmutableList();
+        var heroCards = dealtCardsString.ParseDealtCards().ToImmutableList();
         return new HandHistory(
-            handId:handId,
-            players: [..players.Select(player =>
-                player.nickName == heroNickname
-                ? new HandHistoryPlayer(
-                    seatNumber: player.seatNumber,
-                    nickName:player.nickName ,
-                    stackSize:player.stackSize ,
-                    dealtCards: heroCards
-                    )
-                : new HandHistoryPlayer(
-                    seatNumber: player.seatNumber,
-                    nickName:player.nickName ,
-                    stackSize:player.stackSize ,
-                    dealtCards: ImmutableList<Card>.Empty
-                    ))]);
+           handId: handId,
+    players: [..players.Select(player =>
+        new HandHistoryPlayer(
+            seatNumber: player.seatNumber,
+            nickName: player.nickName,
+            stackSize: player.stackSize,
+            dealtCards: player.nickName == heroNickname
+                ? heroCards
+                : ImmutableList<Card>.Empty))]);
     }
 
     public static long
     ParseHandId(this FluentParser parser) {
         if (!parser.TrySkipUntil("PokerStars Hand #"))
             throw new FormatException("Not a valid PokerStars hand history.");
-            return parser.Skip("PokerStars Hand #".Length).ReadLong();
-
+        return parser.Skip("PokerStars Hand #".Length).ReadLong();
     }
 
     public static IEnumerable<(int seatNumber, string nickName, double stackSize)>
@@ -45,16 +38,16 @@ PokerStarsHandHistoryParser {
         }
     }
 
-    public static  (int seatNumber, string nickName, double stackSize)
+    public static (int seatNumber, string nickName, double stackSize)
     ParseSeatLine(this FluentParser parser) {
         var seatNumber = parser.ReadSeatNumber();
         var nickName = parser.ReadPlayerNick();
         var stackSize = parser.ReadPlayerStack();
-        return(
+        return (
             seatNumber: seatNumber,
             nickName: nickName,
             stackSize: stackSize);
-          }
+    }
 
     public static (string heroNickName, string cards)
     ParseHeroAndCards(this FluentParser parser) {
@@ -94,9 +87,9 @@ PokerStarsHandHistoryParser {
     }
 
     private static string
-    ReadHeroCards(this FluentParser parser) => 
+    ReadHeroCards(this FluentParser parser) =>
         parser.SkipSpaces().VerifyNext("[").Skip(1).ReadUntil(']');
-    
+
     private static int
     ReadSeatNumber(this FluentParser parser) {
         parser.VerifyNext("Seat ").Skip("Seat ".Length);

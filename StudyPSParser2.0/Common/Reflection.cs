@@ -9,6 +9,6 @@ Reflection {
         if (memberInfo.Length > 0) {
             return memberInfo[0].GetCustomAttributes(typeof(TAttribute), false).FirstOrDefault() as TAttribute;
         }
-            throw new ArgumentException($"Enum value '{value}' not found in type '{type.FullName}'.");
+        throw new ArgumentException($"Enum value '{value}' not found in type '{type.FullName}'.");
     }
 }

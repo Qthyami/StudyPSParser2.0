@@ -2,7 +2,7 @@
 
 namespace StudyPSParser2._0;
 
- public class FluentParser {
+public class FluentParser {
     public string String { get; }
     public int _position { get; private set; }
     public int Position => _position;
@@ -142,7 +142,7 @@ namespace StudyPSParser2._0;
         _position = index;
         return true;
     }
-    
+
     public bool
     TrySkipUntil(string @string) {
         var index = String.IndexOf(@string, _position, StringComparison.Ordinal);
@@ -159,14 +159,12 @@ namespace StudyPSParser2._0;
             result = string.Empty;
             return false;
         }
-
         for (int i = _position + offset; i < Length; i++) {
             if (!String[i].IsWordCharacter()) {
                 result = String.Substring(_position + offset, i - _position - offset);
                 _position = i;
                 return true;
             }
-
         }
 
         result = string.Empty;
@@ -192,7 +190,6 @@ namespace StudyPSParser2._0;
 
     public string
     ReadToEnd() => String.Substring(Position);
-    
 
     public int
     ReadInt() {
@@ -245,7 +242,8 @@ namespace StudyPSParser2._0;
                     AddIntPart(number, 3);
                 else
                     return result + number / Math.Pow(10, digits);
-            } else
+            }
+            else
                 return result;
         }
 
@@ -289,10 +287,10 @@ FluentParserHelperInternal {
 
     public static int
     ToDigit(this char @char) {
-        #if DEBUG
+#if DEBUG
         if (@char - '0' > 9)
             throw new ArgumentOutOfRangeException(nameof(@char));
-        #endif
+#endif
         return @char - '0';
     }
 }
