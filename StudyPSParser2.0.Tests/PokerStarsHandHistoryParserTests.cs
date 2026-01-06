@@ -16,9 +16,9 @@ public class PokerStarsHandHistoryParserTests {
         var line = "Seat 3: angrypaca ($26.87 in chips)\n";
         var parser = new FluentParser(line);
         var player = parser.ParseSeatLine();
-        player.SeatNumber.Assert(3);
-        player.NickName.Assert("angrypaca");
-        player.StackSize.Assert(26.87);
+        player.seatNumber.Assert(3);
+        player.nickName.Assert("angrypaca");
+        player.stackSize.Assert(26.87);
     }
 
     [Test]
@@ -28,24 +28,24 @@ public class PokerStarsHandHistoryParserTests {
         parser.ParseHandId();
         var players = parser.ParsePlayers().ToList();
         players.Count.Assert(6);
-        players[0].SeatNumber.Assert(1);
-        players[0].NickName.Assert("VakaLuks");
-        players[0].StackSize.Assert(26.87);
-        players[1].SeatNumber.Assert(2);
-        players[1].NickName.Assert("BigBlindBets");
-        players[1].StackSize.Assert(29.73);
-        players[2].SeatNumber.Assert(3);
-        players[2].NickName.Assert("Jamol121");
-        players[2].StackSize.Assert(17.66);
-        players[3].SeatNumber.Assert(4);
-        players[3].NickName.Assert("ubbikk");
-        players[3].StackSize.Assert(26.06);
-        players[4].SeatNumber.Assert(5);
-        players[4].NickName.Assert("RicsiTheKid");
-        players[4].StackSize.Assert(25.0);
-        players[5].SeatNumber.Assert(6);
-        players[5].NickName.Assert("angrypaca");
-        players[5].StackSize.Assert(26.89);
+        players[0].seatNumber.Assert(1);
+        players[0].nickName.Assert("VakaLuks");
+        players[0].stackSize.Assert(26.87);
+        players[1].seatNumber.Assert(2);
+        players[1].nickName.Assert("BigBlindBets");
+        players[1].stackSize.Assert(29.73);
+        players[2].seatNumber.Assert(3);
+        players[2].nickName.Assert("Jamol121");
+        players[2].stackSize.Assert(17.66);
+        players[3].seatNumber.Assert(4);
+        players[3].nickName.Assert("ubbikk");
+        players[3].stackSize.Assert(26.06);
+        players[4].seatNumber.Assert(5);
+        players[4].nickName.Assert("RicsiTheKid");
+        players[4].stackSize.Assert(25.0);
+        players[5].seatNumber.Assert(6);
+        players[5].nickName.Assert("angrypaca");
+        players[5].stackSize.Assert(26.89);
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class PokerStarsHandHistoryParserTests {
         history.TryGetHeroPlayer(out var hero).AssertTrue();
 
         hero.SeatNumber.Assert(6);
-        hero.NickName.Assert("angrypaca");
+        hero.Nickname.Assert("angrypaca");
         hero.StackSize.Assert(26.89);
         hero.DealtCards.Count.Assert(2);
         hero.DealtCards[0].AssertCard(CardRank.Six,Suit.Diamonds);
@@ -85,7 +85,6 @@ public class PokerStarsHandHistoryParserTests {
             cards[0].AssertCard(CardRank.Six,Suit.Diamonds);
             cards[1].AssertCard(CardRank.Ace, Suit.Spades);
         });
-
     }
 
     public string text = """
@@ -127,6 +126,51 @@ Seat 5: RicsiTheKid (small blind) folded before Flop
 Seat 6: angrypaca (big blind) folded on the Turn
 """;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

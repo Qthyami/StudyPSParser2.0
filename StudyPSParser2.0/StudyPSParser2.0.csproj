@@ -10,10 +10,6 @@
   <ItemGroup>
     <Using Include="System.Collections.Immutable"></Using>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
    
 
 </Project>

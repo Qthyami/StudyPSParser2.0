@@ -1,0 +1,11 @@
+afe7795 Ani-pabedit@gmail.com refactoring
+441c498 Ani-pabedit@gmail.com forgot to change IEnumerable in main data structure
+b5b176b Ani-pabedit@gmail.com add Card data structure + CardParsingHelper + tests
+bf34e2b Ani-pabedit@gmail.com end test refactor
+633904a Ani-pabedit@gmail.com refactor big functions into extensions methods
+a1327b6 Ani-pabedit@gmail.com corrections
+82f4cd3 Ani-pabedit@gmail.com little fix ParseSeatLine function
+ccbb05d Ani-pabedit@gmail.com fix codestyle
+62b671b Ani-pabedit@gmail.com first working version, with tests
+bfdb885 Ani-pabedit@gmail.com Add project files.
+8265bd3 Ani-pabedit@gmail.com Add .gitattributes and .gitignore.
