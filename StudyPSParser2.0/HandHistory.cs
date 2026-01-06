@@ -5,6 +5,8 @@ HandHistory {
     public long HandId { get; }
     public ImmutableList<HandHistoryPlayer> Players { get; }
     public HandHistory(long handId, ImmutableList<HandHistoryPlayer> players) {
+        if (players.Count < 2)
+            throw new InvalidOperationException("There must be at least two players");
         HandId = handId;
         Players = players;
     }

@@ -8,6 +8,8 @@ Card {
         Rank = rank;
         Suit = suit;
     }
+    public override string
+    ToString() => $"{Rank.GetSymbol()}{Suit.GetSymbol()}";
 }
 public enum
 CardRank {
